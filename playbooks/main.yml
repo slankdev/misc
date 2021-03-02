@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app: kapigw
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: Always
+    command: ["tail", "-f", "/dev/null"]
+    volumeMounts:
+    - name: config
+      mountPath: "/config.yml"
+  volumes:
+  - name: vol
+    configMap:
+      name: config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kapigw
+spec:
+  selector:
+    app: kapigw
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 9376
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config
+data:
+  config.yml: |
+    enemies=aliens
+    lives=3
+    enemies.cheat=true
